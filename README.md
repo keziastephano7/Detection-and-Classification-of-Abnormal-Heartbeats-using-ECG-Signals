@@ -44,7 +44,7 @@ Place your trained Keras model at the path specified in app.py.
 Replace 'path' in the code with your actual model file path.
 
 ## 🚀 Usage
-# 1. Preprocess ECG Data
+### 1. Preprocess ECG Data
 Place your raw ECG data in a CSV file with a column named ECG.
 
 Run the preprocessing script to extract R-peak-centered segments:
@@ -53,24 +53,24 @@ python test_processing.py
 ```
 This will generate a file named r_peak_segments.csv containing 360-sample segments centered at detected R-peaks.
 
-# 2. Start the Web Application
+### 2. Start the Web Application
 ```bash
 python app.py
 ```
 The app will be available at: http://localhost:5000/
 
-# 3. Make Predictions
+### 3. Make Predictions
 Open the web interface.
 
 Upload a processed CSV file (e.g., r_peak_segments.csv).
 
 The app will:
 
-Predict the arrhythmia class for each segment.
+- Predict the arrhythmia class for each segment.
 
-Display the ECG segment with the highest-confidence prediction.
+- Display the ECG segment with the highest-confidence prediction.
 
-Return the predicted class, probability, and a base64-encoded image of the segment.
+- Return the predicted class, probability, and a base64-encoded image of the segment.
 
 ## 🔌 API Endpoints
 | Endpoint                       | Method Description                                                   |
@@ -78,10 +78,10 @@ Return the predicted class, probability, and a base64-encoded image of the segme
 | `/	GET`          | Home page (upload form) |
 | `/predict`                      | POST	Upload CSV, returns predictions and visualization |
 
-# 📝 Sample /predict Request
+### 📝 Sample /predict Request
 Form-data: file (CSV file with ECG segments)
 
-# 📤 Sample Response
+### 📤 Sample Response
 ```json
 {
   "output": [0, 1, 0, ...],
@@ -101,13 +101,13 @@ Form-data: file (CSV file with ECG segments)
 | `Q`                      | Unknown/Other |
 
 
-## ⚠️ Notes
+### ⚠️ Note
 The model expects input segments of length 360 samples, as produced by the preprocessing script.
 
 The output class indices correspond to the class list in app.py.
 
 For custom datasets, ensure the CSV format matches the expected input format.
 
-# Acknowledgements
+### Acknowledgements
 Uses SciPy for signal processing
 Built with Flask and TensorFlow
