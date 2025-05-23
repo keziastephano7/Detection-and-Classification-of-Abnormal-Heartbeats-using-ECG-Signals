@@ -3,8 +3,11 @@
 This project is a web-based ECG arrhythmia classification tool that allows users to upload ECG data, processes the signals to extract features, and predicts arrhythmia classes using a deep learning model. The app visualizes the ECG segment with the highest prediction confidence and returns both the predicted class and its probability.
 
 ---
+
 ## 🔗 Dataset Link
 MITBH Arrhythmia Dataset : https://www.kaggle.com/datasets/taejoongyoon/mitbit-arrhythmia-database
+
+---
 
 ## 🚀 Features
 
@@ -73,7 +76,7 @@ The app will:
 - Display the ECG segment with the highest-confidence prediction.
 
 - Return the predicted class, probability, and a base64-encoded image of the segment.
-
+---
 ## 🔌 API Endpoints
 | Endpoint                       | Method Description                                                   |
 |-------------------------------|-----------------------------------------------------------|
@@ -92,7 +95,7 @@ Form-data: file (CSV file with ECG segments)
   "probability": 0.97
 }
 ```
-
+---
 ## 🩺 Arrhythmia Classes
 | Label                          | Description                                                   |
 |-------------------------------|-----------------------------------------------------------|
@@ -102,7 +105,7 @@ Form-data: file (CSV file with ECG segments)
 | `F`                      | Fusion Beat |
 | `Q`                      | Unknown/Other |
 
-
+---
 ### ⚠️ Note
 The model expects input segments of length 360 samples, as produced by the preprocessing script.
 
