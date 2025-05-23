@@ -113,7 +113,6 @@ The output class indices correspond to the class list in app.py.
 
 For custom datasets, ensure the CSV format matches the expected input format.
 
-### Acknowledgements
-Uses SciPy for signal processing
-
-Built with Flask and TensorFlow
+### 📌 Acknowledgements
+- Uses SciPy for signal processing
+- Built with Flask and TensorFlow
