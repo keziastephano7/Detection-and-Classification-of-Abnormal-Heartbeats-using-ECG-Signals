@@ -75,7 +75,7 @@ The app will:
 ## 🔌 API Endpoints
 | Endpoint                       | Method Description                                                   |
 |-------------------------------|-----------------------------------------------------------|
-| `/	GET`          | Home page (upload form) |
+| `/GET`          | Home page (upload form) |
 | `/predict`                      | POST	Upload CSV, returns predictions and visualization |
 
 ### 📝 Sample /predict Request
@@ -84,7 +84,7 @@ Form-data: file (CSV file with ECG segments)
 ### 📤 Sample Response
 ```json
 {
-  "output": [0, 1, 0, ...],
+  "output": [0, 1, 0, 0, 0],
   "ecg_plot": "<base64-png>",
   "label": "N",
   "probability": 0.97
@@ -110,4 +110,5 @@ For custom datasets, ensure the CSV format matches the expected input format.
 
 ### Acknowledgements
 Uses SciPy for signal processing
+
 Built with Flask and TensorFlow
