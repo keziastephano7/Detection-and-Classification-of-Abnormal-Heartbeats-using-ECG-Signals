@@ -36,3 +36,91 @@ This project is a web-based ECG arrhythmia classification tool that allows users
 
 ```bash
 pip install flask flask-cors pandas numpy matplotlib tensorflow scipy
+```
+
+📁 Model File
+Place your trained Keras model at the path specified in app.py.
+
+Replace 'path' in the code with your actual model file path.
+
+🚀 Usage
+1. Preprocess ECG Data
+Place your raw ECG data in a CSV file with a column named ECG.
+
+Run the preprocessing script to extract R-peak-centered segments:
+
+bash
+Copy
+Edit
+python test_processing.py
+This will generate a file named r_peak_segments.csv containing 360-sample segments centered at detected R-peaks.
+
+2. Start the Web Application
+bash
+Copy
+Edit
+python app.py
+The app will be available at:
+http://localhost:5000/
+
+3. Make Predictions
+Open the web interface.
+
+Upload a processed CSV file (e.g., r_peak_segments.csv).
+
+The app will:
+
+Predict the arrhythmia class for each segment.
+
+Display the ECG segment with the highest-confidence prediction.
+
+Return the predicted class, probability, and a base64-encoded image of the segment.
+
+🔌 API Endpoints
+Endpoint	Method	Description
+/	GET	Home page (upload form)
+/predict	POST	Upload CSV, returns predictions and visualization
+
+📝 Sample /predict Request
+Form-data: file (CSV file with ECG segments)
+
+📤 Sample Response
+json
+Copy
+Edit
+{
+  "output": [0, 1, 0, ...],
+  "ecg_plot": "<base64-png>",
+  "label": "N",
+  "probability": 0.97
+}
+🩺 Arrhythmia Classes
+Label	Description
+N	Normal
+SVEB	Supraventricular Ectopic
+VEB	Ventricular Ectopic
+F	Fusion Beat
+Q	Unknown/Other
+
+📊 Example Data
+Refer to ECG_Classification_Revised.ipynb for sample ECG segments and their labels.
+
+⚠️ Notes
+The model expects input segments of length 360 samples, as produced by the preprocessing script.
+
+The output class indices correspond to the class list in app.py.
+
+For custom datasets, ensure the CSV format matches the expected input format.
+
+📄 License
+MIT License (or specify your license here)
+
+🙏 Acknowledgements
+Uses SciPy for signal processing
+
+Built with Flask and TensorFlow
+
+yaml
+Copy
+Edit
+
