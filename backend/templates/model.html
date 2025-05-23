@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ECG Arrhythmia Classifier</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 26px;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    input[type="file"] {
+      display: block;
+      margin: 20px auto;
+      font-size: 16px;
+      border: none;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    #ecgImage {
+      margin-top: 25px;
+      max-width: 100%;
+      border-radius: 10px;
+      border: 2px solid #ffffff44;
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    #ecgImage:hover {
+      transform: scale(1.03);
+    }
+
+    .loading {
+      color: white;
+      font-style: italic;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>ECG Arrhythmia Classifier</h2>
+
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Predict</button>
+
+    <div class="loading" id="loadingMsg" style="display:none;">Analyzing ECG...</div>
+
+    <p id="result"></p>
+    <img id="ecgImage" src="" alt="ECG Plot Will Appear Here">
+  </div>
+
+  <script>
+    function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      const result = document.getElementById('result');
+      const image = document.getElementById('ecgImage');
+      const loading = document.getElementById('loadingMsg');
+
+      if (!file) {
+        alert("Please select a file.");
+        return;
+      }
+
+      result.textContent = '';
+      image.src = '';
+      loading.style.display = 'block';
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      fetch('http://127.0.0.1:5000/predict', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        loading.style.display = 'none';
+
+        if (data.error) {
+          result.innerText = 'Error: ' + data.error;
+          return;
+        }
+
+        result.innerHTML = `🩺 <strong>Predicted Class:</strong> ${data.label} <br> 📊 <strong>Probability:</strong> ${(data.probability * 100).toFixed(2)}%`;
+        image.src = 'data:image/png;base64,' + data.ecg_plot;
+      })
+      .catch(err => {
+        loading.style.display = 'none';
+        result.innerText = 'Error: ' + err.message;
+      });
+    }
+  </script>
+
+</body>
+</html>

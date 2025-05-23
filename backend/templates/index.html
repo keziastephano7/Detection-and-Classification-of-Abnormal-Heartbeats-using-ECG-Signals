@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ECG Arrhythmia Classifier</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+  
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+  
+    body {
+      background-color: #f7f9fc;
+      color: #333;
+      animation: fadeInBody 1.2s ease-in-out forwards;
+    }
+  
+    @keyframes fadeInBody {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  
+    header {
+      background-color: #0e2f44;
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      animation: slideDown 0.6s ease-out forwards;
+    }
+  
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  
+    .logo {
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+  
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+      transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+    }
+  
+    .nav-links.active {
+      display: flex;
+      flex-direction: column;
+      background-color: #0e2f44;
+      position: absolute;
+      top: 70px;
+      left: 0;
+      width: 100%;
+      padding: 1rem;
+      max-height: 500px;
+      opacity: 1;
+      animation: fadeInMenu 0.4s ease-in-out;
+    }
+  
+    @keyframes fadeInMenu {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  
+    .nav-links li a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+  
+    .nav-links li a:hover {
+      color: #00bcd4;
+      transform: scale(1.05);
+    }
+  
+    .hamburger {
+      display: none;
+      font-size: 1.8rem;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+  
+    .hamburger:hover {
+      transform: scale(1.1);
+    }
+  
+    @media (min-width: 769px) {
+      .nav-links {
+        display: flex !important;
+        position: static;
+        max-height: none;
+        opacity: 1;
+      }
+    }
+  
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+    }
+  
+    .container, .side-menu {
+      display: none;
+      padding: 2rem;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      animation: fadeUp 0.7s ease-out forwards;
+    }
+  
+    .side-menu.show,
+    .container.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      max-width: 600px;
+      margin: 2rem auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      animation: zoomIn 0.6s ease-out;
+    }
+  
+    @keyframes zoomIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  
+    .card-title {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+  
+    .card-subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+  
+    .file-upload-container {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+  
+    .custom-file-upload {
+      padding: 0.7rem 1.2rem;
+      background-color: #00bcd4;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      display: inline-block;
+      transition: all 0.3s ease-in-out;
+    }
+  
+    .custom-file-upload:hover {
+      background-color: #008c9e;
+      transform: scale(1.05);
+    }
+  
+    .file-input {
+      display: none;
+    }
+  
+    .predict-button {
+      width: 100%;
+      padding: 1rem;
+      background-color: #0e2f44;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+  
+    .predict-button:hover {
+      background-color: #0b2334;
+      transform: scale(1.03);
+    }
+  
+    .result {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+  
+    .hidden {
+      display: none;
+    }
+  
+    /* Heart Rhythm GIF */
+    .rhythm-gif {
+      max-width: 40%;
+      margin: 1rem auto;
+      display: block;
+      border-radius: 8px;
+      transition: transform 0.3s ease-in-out;
+      animation: fadeZoom 1s ease forwards;
+    }
+  
+    @keyframes fadeZoom {
+      0% {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  
+    .rhythm-gif:hover {
+      transform: scale(1.02);
+    }
+  
+    /* Beat Table */
+    .beat-table {
+      width: 60%;
+      margin: 2rem auto;
+      border-collapse: collapse;
+      transition: all 0.3s ease-in-out;
+      animation: fadeInBody 1s ease-in-out;
+    }
+  
+    .beat-table th, .beat-table td {
+      padding: 0.5rem;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+  
+    .beat-table th {
+      background-color: #f0f4f8;
+      font-weight: 600;
+    }
+  
+    .tooltip {
+      position: relative;
+      cursor: help;
+    }
+  
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 5px;
+      padding: 0.5rem;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -100px;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+  
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+  
+    /* Model Section Images */
+    .menu-image {
+      max-width: 40%;
+      height: auto;
+      display: block;
+      margin: 1.5rem auto;
+      border-radius: 8px;
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      animation: fadeZoom 1s ease-out;
+    }
+  
+    .menu-image:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+  
+    .side-menu h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      color: #333;
+      animation: fadeInBody 0.8s ease;
+    }
+  </style>
+  
+  
+</head>
+
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo">ECG Classifier</div>
+      <div class="hamburger" onclick="toggleMenu()">☰</div>
+      <ul class="nav-links" id="navLinks">
+        <li><a onclick="showSection('home')">Home</a></li>
+        <li><a onclick="showSection('beat')">Heartbeat Rhythms</a></li>
+        <li><a onclick="showSection('model')">Model</a></li>
+        <li><a onclick="showSection('predict')">Predict</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Home Section -->
+  <div id="home" class="container show">
+    <div class="card">
+      <h1 class="card-title">Welcome to the ECG Arrhythmia Classifier</h1>
+      <p class="card-subtitle">This tool helps identify different types of heartbeats from ECG signals.</p>
+    </div>
+  </div>
+
+  <!-- Beat Types Section -->
+  <div id="beat" class="side-menu">
+    <h2>About Heart Rhythms</h2>
+    <img src="https://kidshealth.org/content/dam/kidshealth/en/slideshows/Heart-enSS-3.gif" alt="Heart Rhythm" class="rhythm-gif" />
+
+    <table class="beat-table">
+      <thead>
+        <tr><th>Beat Type</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tooltip">Supra-Ventricular Ectopic Beat(SVEB)<span class="tooltiptext">Atrial-origin extra beat</span></td><td>Atrial-origin extra beat</td></tr>
+        <tr><td class="tooltip">Ventricular Ectopic Beat(VEB)<span class="tooltiptext">Ventricular-origin extra beat</span></td><td>Ventricular-origin extra beat</td></tr>
+        <tr><td class="tooltip">Fusion Beat(F)<span class="tooltiptext">Fusion of ventricular and normal pathways</span></td><td>Fusion of ventricular and normal pathways</td></tr>
+        <tr><td class="tooltip">Unknown Beat(Q)<span class="tooltiptext">Paced or unclassified beats</span></td><td>Paced or unclassified beats</td></tr>
+        <tr><td class="tooltip">Normal Beat(N)<span class="tooltiptext">Normal conduction pathways</span></td><td>Normal conduction pathways</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Model Section -->
+  <div id="model" class="side-menu">
+    <h2>About the Model</h2>
+    <img src="../static/model_new.jpeg" alt="About the Model" class="menu-image" />
+
+    <h2>Evaluation Metrics</h2>
+    <img src="../static/metrics.jpeg" alt="Evaluation Metrics" class="menu-image" />
+  </div>
+
+  <!-- Prediction Section -->
+  <div id="predict" class="container">
+    <div class="card">
+      <h1 class="card-title">ECG Arrhythmia Classifier</h1>
+      <p class="card-subtitle">Upload an ECG signal for analysis.</p>
+      <div class="file-upload-container">
+        <label for="fileInput" class="custom-file-upload">
+          <span id="fileUploadText">Choose ECG File</span>
+        </label>
+        <input type="file" id="fileInput" accept=".csv" class="file-input" />
+      </div>
+      <button id="predictBtn" class="predict-button">Analyze ECG</button>
+      <div id="result" class="result hidden">
+        <h2 class="result-title">Analysis Result:</h2>
+        <p id="output" class="result-text">Processing...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('fileInput').addEventListener('change', (event) => {
+      const predictBtn = document.getElementById('predictBtn');
+      const fileUploadText = document.getElementById('fileUploadText');
+
+      if (event.target.files.length > 0) {
+        const fileName = event.target.files[0].name;
+        fileUploadText.textContent = fileName;
+      } else {
+        fileUploadText.textContent = "Choose ECG File";
+      }
+    });
+
+    document.getElementById('predictBtn').addEventListener('click', () => {
+      const fileInput = document.getElementById('fileInput');
+      const resultDiv = document.getElementById('result');
+      const output = document.getElementById('output');
+
+      if (fileInput.files.length === 0) {
+        alert('Please upload an ECG file first.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      // Show loading indicator while the request is in progress
+      output.innerHTML = "<em>Analyzing ECG...</em> 🔍";
+      resultDiv.classList.remove('hidden');
+
+      fetch('http://localhost:5000/predict', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          output.textContent = "Error: " + data.error;
+        } else {
+          const label = data.label;
+          const imgSrc = `data:image/png;base64,${data.ecg_plot}`;
+          
+          output.innerHTML = `
+            <strong>Predicted Class:</strong> ${label} <br/><br/>
+            <img src="${imgSrc}" alt="ECG Plot" style="max-width: 100%; border-radius: 10px; border: 1px solid #ccc;" />
+          `;
+        }
+      })
+      .catch(err => {
+        output.textContent = "An error occurred: " + err.message;
+      })
+      .finally(() => {
+        // Ensure resultDiv is shown regardless of success or error
+        resultDiv.classList.remove('hidden');
+      });
+    });
+
+    function toggleMenu() {
+      const menu = document.getElementById('sideMenu');
+      menu.classList.toggle('active');
+    }
+
+    function showSection(id) {
+      // Hide all sections
+      const sections = document.querySelectorAll(".container, .side-menu");
+      sections.forEach(s => s.classList.remove("show"));
+
+      // Show selected section
+      const target = document.getElementById(id);
+      if (target) target.classList.add("show");
+
+      // Close menu on mobile
+      const navLinks = document.getElementById("navLinks");
+      if (navLinks) navLinks.classList.remove("active");
+    }
+  </script>
+</body>
+</html>
